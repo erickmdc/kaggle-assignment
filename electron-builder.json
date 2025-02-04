@@ -1,0 +1,8 @@
+{
+  "appId": "com.erickmdc.kaggle-assignment",
+  "files": ["dist-app"],
+  "icon": "./empty-png.png",
+  "win": {
+    "target": ["portable"]
+  }
+}

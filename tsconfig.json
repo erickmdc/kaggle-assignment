@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    // "types": [
+    //   "./src/types"
+    // ],
+    "target": "ESNext",
+    "module": "NodeNext",
+    "skipLibCheck": true,
+    "strict": true,
+    "outDir": "./dist-app"
+  },
+}
