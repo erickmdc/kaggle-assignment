@@ -1,22 +1,29 @@
-import { app, BrowserWindow } from 'electron';
+import { app } from 'electron';
 import playwright from 'playwright';
 import AdmZip from 'adm-zip';
 import csv from 'csv-parser';
 import fs from 'fs';
 import mysql, { ResultSetHeader } from 'mysql2/promise';
-import { 
+import {
   BULK_INSERT_QUERY, SELECT_QUERY, UPDATE_SUBMISSION_STATUS_QUERY,
-  PARTICIPANT_FORM_URL, SUBMIT_FORM_URL,
-  KAGGLE_URL, KAGGLE_DATASET_URL } from './constraints';
+  PARTICIPANT_FORM_URL, SUBMIT_FORM_URL, USER_DATA_DIR,
+  KAGGLE_URL, KAGGLE_DATASET_URL
+} from './constraints';
 import { IBabyNameCsv, SubmissionStatus, IBabyName } from './types';
 import env from './env';
 import path from 'path';
 
 app.on('ready', async () => {
   try {
-    const browser = await playwright.chromium.launch({ headless: false });
-    const context = await browser.newContext();
-    const page = await context.newPage();
+
+    const browserContext = await playwright.chromium.launchPersistentContext(
+      USER_DATA_DIR, {
+      headless: false,
+      channel: 'chrome'
+    });
+
+    let page = browserContext.pages().at(0);
+    if (!page) page = await browserContext.newPage();
 
     const fileName = await getDataFromKaggle(page);
 
@@ -33,8 +40,9 @@ app.on('ready', async () => {
 
 
 const getDataFromKaggle = async (page: playwright.Page): Promise<string> => {
-
   await page.goto(KAGGLE_URL);
+  await page.pause();
+  return "";
   await page.getByRole('link', { name: 'Sign In' }).click();
   await page.getByRole('button', { name: 'Sign In with Email' }).click();
   await page.getByLabel('Email / Username').fill(env.KAGGLE_NAME);
@@ -67,7 +75,7 @@ const getDataFromKaggle = async (page: playwright.Page): Promise<string> => {
 
 const unzipFile = async (fileName: string) => {
   var unzipPromise = new Promise<void>((resolve, reject) => {
-    
+
     const zip = new AdmZip(path.join(env.ZIP_PATH, fileName));
     zip.extractAllToAsync(env.CSV_PATH, true, undefined, err => {
       if (err) reject(err);
@@ -115,7 +123,6 @@ const processFile = async (initialChunk = 0): Promise<void> => {
 }
 
 const submitData = async (page: playwright.Page, useApi = true): Promise<void> => {
-
   const data = await getData();
 
   //Doing it synchronously so Form doesn't get overloaded
@@ -151,7 +158,6 @@ const submitData = async (page: playwright.Page, useApi = true): Promise<void> =
 }
 
 const submitDataByWeb = async (page: playwright.Page, row: { name: string; yearOfBirth: number; sex: string; number: number }): Promise<void> => {
-
   if (page.url() != PARTICIPANT_FORM_URL)
     await page.goto(PARTICIPANT_FORM_URL);
 
