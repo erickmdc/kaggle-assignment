@@ -10,3 +10,5 @@ export const KAGGLE_DATASET_URL = 'https://www.kaggle.com/datasets/thedevastator
 //Google Form urls
 export const SUBMIT_FORM_URL = (yearOfBirth: number, name: string, sex: string, number: number) => `https://docs.google.com/forms/d/e/1FAIpQLScgU3nOl5T92pvKQi6ATl-Rz83CgFiMMAEyRTBFcLOSu62j4A/formResponse?usp=pp_url&entry.785709935=${yearOfBirth}&entry.1978853702=${name}&entry.663394750=${sex}&entry.119008361=${number}&submit=Submit`;
 export const PARTICIPANT_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScgU3nOl5T92pvKQi6ATl-Rz83CgFiMMAEyRTBFcLOSu62j4A/viewform';
+
+export const USER_DATA_DIR = 'C:\\Usuários\\emc7\\AppData\\Local\\Google\\Chrome\\User Data';
